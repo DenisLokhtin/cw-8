@@ -1,0 +1,23 @@
+.add-quote {
+    text-align: left;
+    display: inline-block;
+    margin-left: 16%;
+    margin-right: 16.5% ;
+}
+
+.add-quote h2 {
+    font-weight: normal;
+}
+
+.btn-save {
+    background: none;
+    border: 2px solid black;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 20px;
+    transition: 200ms;
+}
+
+.btn-save:hover {
+    transform: scale(1.1);
+}
