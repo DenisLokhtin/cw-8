@@ -20,14 +20,14 @@ function App(props) {
     const [quotes, setQuotes] = useState([]);
 
     const [newQuote, setNewQuote] = useState({
-        category: '',
+        category: 'star-wars',
         author: '',
         text: '',
     })
 
     const changeCategory = (value) => {
         console.log(value)
-        setNewQuote({...newQuote, category: value})
+        setNewQuote({...newQuote, category: value.toLowerCase()})
     }
 
     const changeAuthor = (value) => {
@@ -38,6 +38,20 @@ function App(props) {
     const changeText = (value) => {
         console.log(value)
         setNewQuote({...newQuote, text: value})
+    }
+
+    const editQuote = async (event, id) => {
+        event.preventDefault()
+        try {
+            await axiosApi.put('/Quotes/' + id + '.json', newQuote)
+        } finally {
+            setNewQuote({
+                category: '',
+                author: '',
+                text: '',
+            })
+            window.location.replace('/')
+        }
     }
 
     const addQuote = async event => {
@@ -55,10 +69,11 @@ function App(props) {
     }
 
     const getQuote = async (id) => {
-        let URL = '/Quotes';
+        let URL = '/Quotes/';
         try {
             await axiosApi.get(URL + id + '.json').then(response => {
                 if (response.data !== null) {
+                    console.log(response.data)
                     setNewQuote(response.data)
                 }
             });
@@ -70,6 +85,7 @@ function App(props) {
 
     const getQuotes = async (additionalURL) => {
         let URL = '/Quotes.json';
+        additionalURL = additionalURL.replace(/-/g, ' ');
         if (additionalURL !== '/') {
             URL = URL + `/?orderBy="category"&equalTo="${additionalURL.substr(1)}"`
         }
@@ -128,6 +144,8 @@ function App(props) {
                                                                      changeText={(value) => changeText(value)}/>}/>
                     <Route path="/edit-quote/:id"
                            render={() => <EditQuote changeCategory={(value) => changeCategory(value)}
+                                                    newQuote={newQuote}
+                                                    editQuote={(event, id) => editQuote(event, id)}
                                                     getQuote={(id) => getQuote(id)}
                                                     changeAuthor={(value) => changeAuthor(value)}
                                                     changeText={(value) => changeText(value)}/>}/>
