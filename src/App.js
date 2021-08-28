@@ -2,9 +2,10 @@ import {BrowserRouter, NavLink, Route, Switch} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axiosApi from "./axiosApi";
 import AddQuote from "./components/AddQuote/AddQuote";
-import './App.css';
 import Home from "./components/Home/Home";
-import Quote from "./components/Quote/Quote";
+import EditQuote from "./components/EditQuote/EditQuote";
+import './App.css';
+
 
 function App(props) {
     const categories = [
@@ -50,6 +51,19 @@ function App(props) {
                 text: '',
             })
             window.location.replace('/')
+        }
+    }
+
+    const getQuote = async (id) => {
+        let URL = '/Quotes';
+        try {
+            await axiosApi.get(URL + id + '.json').then(response => {
+                if (response.data !== null) {
+                    setNewQuote(response.data)
+                }
+            });
+        } catch (e) {
+            console.log(e)
         }
     }
 
@@ -112,6 +126,11 @@ function App(props) {
                                                                      addQuote={addQuote}
                                                                      changeAuthor={(value) => changeAuthor(value)}
                                                                      changeText={(value) => changeText(value)}/>}/>
+                    <Route path="/edit-quote/:id"
+                           render={() => <EditQuote changeCategory={(value) => changeCategory(value)}
+                                                    getQuote={(id) => getQuote(id)}
+                                                    changeAuthor={(value) => changeAuthor(value)}
+                                                    changeText={(value) => changeText(value)}/>}/>
                     <Route path="/star-wars"
                            render={() => <Home deleteQuote={(id) => deleteQuote(id)} quotes={quotes}/>}/>
                     <Route path="/famous-people"

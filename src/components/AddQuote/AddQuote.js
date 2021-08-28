@@ -3,7 +3,7 @@ import './AddQuote.css'
 
 const AddQuote = (props) => (
     <div className="add-quote">
-        <h2>submit new quote</h2>
+        <h2>Quote</h2>
         <form onSubmit={props.addQuote}>
             <p>Category</p>
             <select name='category' onChange={(event => props.changeCategory(event.target.value))}>
