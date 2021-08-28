@@ -12,9 +12,6 @@ body {
 
 .container-inner {
     width: 1300px;
-    display: flex;
-    flex-direction: row-reverse;
-
 }
 
 a {
@@ -56,6 +53,7 @@ a:hover {
 
 .categories {
     display: flex;
+    float: left;
     flex-direction: column;
     width: 150px;
 }

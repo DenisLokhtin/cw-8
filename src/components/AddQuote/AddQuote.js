@@ -4,9 +4,9 @@ import './AddQuote.css'
 const AddQuote = (props) => (
     <div className="add-quote">
         <h2>submit new quote</h2>
-        <form>
+        <form onSubmit={props.addQuote}>
             <p>Category</p>
-            <select>
+            <select name='category' onChange={(event => props.changeCategory(event.target.value))}>
                 <option>Star Wars</option>
                 <option>Famous People</option>
                 <option>Saying</option>
@@ -14,9 +14,9 @@ const AddQuote = (props) => (
                 <option>Motivational</option>
             </select>
             <p>Author</p>
-            <input type="text"/>
+            <input name='author' onChange={(event => props.changeAuthor(event.target.value))} type="text"/>
             <p>Quote text</p>
-            <textarea cols="120" rows="10"></textarea>
+            <textarea name='text' onChange={(event => props.changeText(event.target.value))} cols="120" rows="10"/>
             <div>
                 <button className="btn-save">Save</button>
             </div>

@@ -5,3 +5,8 @@
 .additional-cont {
     text-align: center;
 }
+
+.quotes {
+    display: inline-block;
+    width: 85%;
+}

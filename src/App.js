@@ -1,13 +1,12 @@
 import {BrowserRouter, NavLink, Route, Switch} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axiosApi from "./axiosApi";
-import axios from 'axios';
-import Quote from "./components/Quote/Quote";
 import AddQuote from "./components/AddQuote/AddQuote";
 import './App.css';
 import Home from "./components/Home/Home";
+import Quote from "./components/Quote/Quote";
 
-function App() {
+function App(props) {
     const categories = [
         {title: 'All', id: '/'},
         {title: 'Star Wars', id: 'star-wars'},
@@ -19,8 +18,47 @@ function App() {
 
     const [quotes, setQuotes] = useState([]);
 
+    const [newQuote, setNewQuote] = useState({
+        category: '',
+        author: '',
+        text: '',
+    })
+
+    const changeCategory = (value) => {
+        console.log(value)
+        setNewQuote({...newQuote, category: value})
+    }
+
+    const changeAuthor = (value) => {
+        console.log(value)
+        setNewQuote({...newQuote, author: value})
+    }
+
+    const changeText = (value) => {
+        console.log(value)
+        setNewQuote({...newQuote, text: value})
+    }
+
+    const addQuote = async event => {
+        event.preventDefault()
+        try {
+            await axiosApi.post('/Quotes.json', newQuote)
+        } finally {
+            setNewQuote({
+                category: '',
+                author: '',
+                text: '',
+            })
+            window.location.replace('/')
+        }
+    }
+
+
     const getQuotes = async (additionalURL) => {
-        let URL = '/Quotes.json' + additionalURL;
+        let URL = '/Quotes.json';
+        if (additionalURL !== '/') {
+            URL = URL + `/?orderBy="category"&equalTo="${additionalURL.substr(1)}"`
+        }
         try {
             await axiosApi.get(URL).then(response => {
                 if (response.data !== null) {
@@ -34,40 +72,59 @@ function App() {
             });
         } catch (e) {
             console.log(e)
+        }
     }
-}
 
-useEffect(() => {
-    getQuotes()
-}, [])
+    const deleteQuote = async (id) => {
+        console.log(id)
+        let URL = '/Quotes/' + id + '.json';
+        try {
+            await axiosApi.delete(URL).then(response => {
+                getQuotes(window.location.pathname)
+            });
+        } catch (e) {
+            console.log(e)
+        }
+    };
 
-return (
-    <div>
-        {console.log(quotes)}
-        <BrowserRouter>
-            <div className="navigation">
-                <div className="header">
-                    <NavLink to="/">Quotes Central</NavLink>
+    useEffect(() => {
+        setInterval(() => {
+            getQuotes(window.location.pathname);
+        }, 2000)
+    }, [window.location.pathname])
+
+    return (
+        <div>
+            <BrowserRouter>
+                <div className="navigation">
+                    <div className="header">
+                        <NavLink to="/">Quotes Central</NavLink>
+                    </div>
+                    <div className="additional-nav">
+                        <NavLink to="/">Quotes</NavLink>
+                        <NavLink to="/add-quote">Submit new Quote</NavLink>
+                    </div>
                 </div>
-                <div className="additional-nav">
-                    <NavLink to="/">Quotes</NavLink>
-                    <NavLink to="/add-quote">Submit new Quote</NavLink>
-                </div>
-            </div>
 
-            <Switch>
-                <Route exact path="/" render={() => <Home/>}/>
-                <Route path="/add-quote" component={AddQuote}/>
-                <Route path="/star-wars" component={Home}/>
-                <Route path="/famous-people" component={Home}/>
-                <Route path="/saying" component={Home}/>
-                <Route path="/humor" component={Home}/>
-                <Route path="/motivational" component={Home}/>
-            </Switch>
+                <Switch>
+                    <Route exact path="/" render={() => <Home deleteQuote={(id) => deleteQuote(id)} quotes={quotes}/>}/>
+                    <Route path="/add-quote" render={() => <AddQuote changeCategory={(value) => changeCategory(value)}
+                                                                     addQuote={addQuote}
+                                                                     changeAuthor={(value) => changeAuthor(value)}
+                                                                     changeText={(value) => changeText(value)}/>}/>
+                    <Route path="/star-wars"
+                           render={() => <Home deleteQuote={(id) => deleteQuote(id)} quotes={quotes}/>}/>
+                    <Route path="/famous-people"
+                           render={() => <Home deleteQuote={(id) => deleteQuote(id)} quotes={quotes}/>}/>
+                    <Route path="/saying" render={() => <Home deleteQuote={(id) => deleteQuote(id)} quotes={quotes}/>}/>
+                    <Route path="/humor" render={() => <Home deleteQuote={(id) => deleteQuote(id)} quotes={quotes}/>}/>
+                    <Route path="/motivational"
+                           render={() => <Home deleteQuote={(id) => deleteQuote(id)} quotes={quotes}/>}/>
+                </Switch>
 
-        </BrowserRouter>
-    </div>
-);
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;
